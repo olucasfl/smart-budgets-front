@@ -1,0 +1,13 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;600&display=swap");
+
+:root {
+  --bg: #0f172a;
+  --card: #111827;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #1f2937;
+}

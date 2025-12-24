@@ -1,0 +1,1 @@
+export type ExpenseType = "CREDIT" | "DEBIT" | "PIX" | "MONEY";
