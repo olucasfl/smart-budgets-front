@@ -1,27 +1,52 @@
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
-  background: linear-gradient(135deg, #0f172a, #020617);
-  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .container {
   max-width: 1100px;
-  margin: auto;
-  padding: 32px;
+  margin: 0 auto;
+  padding: 48px 24px;
 }
 
-h1, h2, h3 {
-  font-family: "Poppins", sans-serif;
-  margin-bottom: 8px;
+h1 {
+  font-size: 2.4rem;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+button {
+  font-family: inherit;
+}
+
+button:focus {
+  outline: none;
 }
 
 .card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  background: var(--card-bg);
+  backdrop-filter: var(--blur);
+  border-radius: var(--radius);
+  padding: 28px;
+  border: 1px solid var(--card-border);
 }
 
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

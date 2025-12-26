@@ -1,13 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;600&display=swap");
-
 :root {
-  --bg: #0f172a;
-  --card: #111827;
+  --bg-main: radial-gradient(
+    circle at top,
+    #283041 0%,
+    #0d0a46 70%
+  );
+
+  --card-bg: rgba(30, 41, 59, 0.65);
+  --card-border: rgba(255, 255, 255, 0.08);
+
   --primary: #6366f1;
-  --primary-light: #818cf8;
+  --primary-hover: #818cf8;
+
   --danger: #ef4444;
+  --danger-hover: #f87171;
+
   --success: #22c55e;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --border: #1f2937;
+  --warning: #facc15;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --radius: 18px;
+  --blur: blur(14px);
 }

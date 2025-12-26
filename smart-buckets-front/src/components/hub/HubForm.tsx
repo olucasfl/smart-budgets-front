@@ -4,33 +4,61 @@ import { hubService } from "../../services/hubService";
 export function HubForm({ onSaved }: { onSaved: () => void }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [budgetLimit, setBudgetLimit] = useState(0);
+  const [limit, setLimit] = useState<number | "">("");
 
-  const submit = () => {
-    hubService.create({ name, description, budgetLimit }).then(() => {
-      setName("");
-      setDescription("");
-      setBudgetLimit(0);
-      onSaved();
+  const submit = async () => {
+    if (!name || !limit) {
+      alert("Preencha todos os campos");
+      return;
+    }
+
+    await hubService.create({
+      name,
+      description,
+      budgetLimit: Number(limit)
     });
+
+    setName("");
+    setDescription("");
+    setLimit("");
+    onSaved();
   };
 
   return (
-    <div className="card">
+    <div className="form-card fade-in">
       <h3>Novo Hub</h3>
 
-      <input placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
-      <input placeholder="Descrição" value={description} onChange={e => setDescription(e.target.value)} />
-      <input
-        type="number"
-        placeholder="Limite"
-        value={budgetLimit}
-        onChange={e => setBudgetLimit(Number(e.target.value))}
-      />
+      <div className="form-horizontal">
+        <div className="form-group">
+          <label>Nome</label>
+          <input value={name} onChange={e => setName(e.target.value)} />
+        </div>
 
-      <button className="primary" onClick={submit}>
-        Salvar
-      </button>
+        <div className="form-group">
+          <label>Limite</label>
+          <input
+            type="number"
+            value={limit}
+            onChange={e =>
+              setLimit(e.target.value ? Number(e.target.value) : "")
+            }
+          />
+        </div>
+
+        <div className="form-group form-full">
+          <label>Descrição</label>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+          />
+        </div>
+
+        <div className="form-action form-full">
+          <button className="primary" onClick={submit}>
+            Salvar Hub
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

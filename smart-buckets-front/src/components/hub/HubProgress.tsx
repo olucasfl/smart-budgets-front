@@ -9,7 +9,6 @@ export function HubProgress({
 
   return (
     <div>
-      <div className="muted">Orçamento usado</div>
       <div
         style={{
           background: "#020617",

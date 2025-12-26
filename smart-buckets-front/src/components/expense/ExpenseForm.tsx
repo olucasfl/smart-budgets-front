@@ -1,93 +1,62 @@
 import { useState } from "react";
 import { expenseService } from "../../services/expenseService";
-import type { ExpenseType } from "../../dtos/ExpenseType";
 
-type Props = {
+export default function ExpenseForm({
+  hubId,
+  onSaved
+}: {
   hubId: number;
   onSaved: () => void;
-};
-
-export function ExpenseForm({ hubId, onSaved }: Props) {
+}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState<number | "">("");
-  const [type, setType] = useState<ExpenseType>("DEBIT");
-  const [loading, setLoading] = useState(false);
+  const [type, setType] = useState("DEBIT");
 
   const submit = async () => {
-    if (!name || !description || !amount) {
-      alert("Preencha todos os campos");
+    if (!name || !amount) {
+      alert("Preencha nome e valor");
       return;
     }
 
-    try {
-      setLoading(true);
+    await expenseService.create(hubId, {
+      name,
+      description,
+      amount: Number(amount),
+      type
+    });
 
-      await expenseService.create(hubId, {
-        name,
-        description,
-        amount: Number(amount),
-        type,
-      });
-
-      // reset form
-      setName("");
-      setDescription("");
-      setAmount("");
-      setType("DEBIT");
-
-      onSaved();
-    } catch (error) {
-      alert("Erro ao criar despesa");
-    } finally {
-      setLoading(false);
-    }
+    setName("");
+    setDescription("");
+    setAmount("");
+    setType("DEBIT");
+    onSaved();
   };
 
   return (
-    <div className="card">
+    <div className="form-card fade-in">
       <h3>Nova Despesa</h3>
 
-      <input
-        placeholder="Nome"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <div className="form-horizontal">
+        <input placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
+        <input type="number" placeholder="Valor" value={amount}
+          onChange={e => setAmount(e.target.value ? Number(e.target.value) : "")} />
 
-      <input
-        placeholder="Descrição"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+        <textarea placeholder="Descrição (opcional)"
+          value={description}
+          onChange={e => setDescription(e.target.value)} />
 
-      <input
-        type="number"
-        placeholder="Valor"
-        value={amount}
-        min={0}
-        step="0.01"
-        onChange={(e) =>
-          setAmount(e.target.value ? Number(e.target.value) : "")
-        }
-      />
+        <select value={type} onChange={e => setType(e.target.value)}>
+          <option value="DEBIT">Débito</option>
+          <option value="CREDIT">Crédito</option>
+          <option value="PIX">PIX</option>
+          <option value="MONEY">Dinheiro</option>
+        </select>
 
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value as ExpenseType)}
-      >
-        <option value="CREDIT">Crédito</option>
-        <option value="DEBIT">Débito</option>
-        <option value="PIX">PIX</option>
-        <option value="MONEY">Dinheiro</option>
-      </select>
-
-      <button
-        className="primary"
-        onClick={submit}
-        disabled={loading}
-      >
-        {loading ? "Salvando..." : "Adicionar"}
-      </button>
+        <button className="primary" onClick={submit}>
+          Adicionar
+        </button>
+      </div>
     </div>
   );
 }
