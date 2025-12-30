@@ -1,61 +1,135 @@
 import { useState } from "react";
 import { hubService } from "../../services/hubService";
 
-export function HubForm({ onSaved }: { onSaved: () => void }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [limit, setLimit] = useState<number | "">("");
+type Props = {
+  onSaved: () => void;
+};
 
-  const submit = async () => {
-    if (!name || !limit) {
-      alert("Preencha todos os campos");
-      return;
+type FieldErrors = {
+  name?: string;
+  limit?: string;
+  general?: string;
+};
+
+export function HubForm({ onSaved }: Props) {
+  const [name, setName] = useState("");
+  const [limit, setLimit] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  /* =========================
+     VALIDAÇÃO
+  ========================= */
+
+  const validate = (): boolean => {
+    const newErrors: FieldErrors = {};
+
+    if (!name.trim()) {
+      newErrors.name = "Informe o nome do hub.";
     }
 
-    await hubService.create({
-      name,
-      description,
-      budgetLimit: Number(limit)
-    });
+    if (!limit) {
+      newErrors.limit = "Informe o limite.";
+    } else if (Number(limit) <= 0) {
+      newErrors.limit = "O limite deve ser maior que zero.";
+    }
 
-    setName("");
-    setDescription("");
-    setLimit("");
-    onSaved();
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  /* =========================
+     SUBMIT
+  ========================= */
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      await hubService.create({
+        name: name.trim(),
+        budgetLimit: Number(limit),
+        description: description.trim()
+      });
+
+      setName("");
+      setLimit("");
+      setDescription("");
+
+      onSaved();
+    } catch (err: any) {
+      if (err?.response?.data?.message) {
+        setErrors({ general: err.response.data.message });
+      } else {
+        setErrors({ general: "Erro ao criar hub." });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="form-card fade-in">
+    <div className="hub-form">
       <h3>Novo Hub</h3>
 
-      <div className="form-horizontal">
-        <div className="form-group">
+      {errors.general && (
+        <div className="form-error">
+          {errors.general}
+        </div>
+      )}
+
+      <div className="hub-form-grid">
+        {/* NOME */}
+        <div className="form-group full">
           <label>Nome</label>
-          <input value={name} onChange={e => setName(e.target.value)} />
+          <input
+            placeholder="Ex: Gastos Agosto"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className={errors.name ? "input-error" : ""}
+          />
+          {errors.name && (
+            <span className="error-text">{errors.name}</span>
+          )}
         </div>
 
+        {/* LIMITE */}
         <div className="form-group">
           <label>Limite</label>
           <input
             type="number"
+            placeholder="R$ 0.00"
             value={limit}
-            onChange={e =>
-              setLimit(e.target.value ? Number(e.target.value) : "")
-            }
+            onChange={e => setLimit(e.target.value)}
+            className={errors.limit ? "input-error" : ""}
           />
+          {errors.limit && (
+            <span className="error-text">{errors.limit}</span>
+          )}
         </div>
 
-        <div className="form-group form-full">
-          <label>Descrição</label>
+        {/* DESCRIÇÃO */}
+        <div className="form-group full">
+          <label>Descrição (opcional)</label>
           <textarea
+            placeholder="Descrição do hub..."
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
         </div>
 
-        <div className="form-action form-full">
-          <button className="primary" onClick={submit}>
-            Salvar Hub
+        {/* BOTÃO */}
+        <div className="form-group button">
+          <button
+            className="primary"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Salvando..." : "Salvar Hub"}
           </button>
         </div>
       </div>

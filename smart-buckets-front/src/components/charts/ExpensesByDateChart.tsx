@@ -5,20 +5,20 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
   Legend
 } from "recharts";
-import { useState } from "react";
 import type { ExpenseResponse } from "../../dtos/ExpenseResponse";
 
-/* 🎨 CORES POR ENUM */
+/* 🎨 CORES SUAVES */
 const COLORS: Record<string, string> = {
-  PIX: "#6366f1",
-  CREDIT: "#8b5cf6",
-  DEBIT: "#22c55e",
-  MONEY: "#f59e0b"
+  PIX: "#6366F1",
+  CREDIT: "#A855F7",
+  DEBIT: "#22C55E",
+  MONEY: "#F59E0B"
 };
 
-/* 🇧🇷 LABELS EM PT-BR */
+/* 🇧🇷 LABELS */
 const TYPE_LABELS: Record<string, string> = {
   PIX: "Pix",
   CREDIT: "Crédito",
@@ -33,40 +33,45 @@ export function ExpensesByDateChart({
 }: {
   expenses: ExpenseResponse[];
 }) {
-  const [visibleTypes, setVisibleTypes] = useState<Record<string, boolean>>({
-    PIX: true,
-    CREDIT: true,
-    DEBIT: true,
-    MONEY: true
-  });
-
-  /* 1️⃣ AGRUPA POR DATA + TIPO (GARANTINDO ZERO) */
+  /* 1️⃣ AGRUPA POR DATA (SEM TIMEZONE) */
   const grouped: Record<string, Record<string, number>> = {};
 
   expenses.forEach(e => {
     if (!e.createAt) return;
 
-    const date = new Date(e.createAt).toLocaleDateString("pt-BR");
+    // 👉 USA A DATA CRUA DO BACKEND
+    const rawDate = e.createAt.slice(0, 10); // YYYY-MM-DD
 
-    if (!grouped[date]) {
-      grouped[date] = {};
-      TYPES.forEach(type => {
-        grouped[date][type] = 0;
-      });
+    if (!grouped[rawDate]) {
+      grouped[rawDate] = {
+        PIX: 0,
+        CREDIT: 0,
+        DEBIT: 0,
+        MONEY: 0
+      };
     }
 
-    grouped[date][e.type] += Number(e.amount);
+    grouped[rawDate][e.type] += Number(e.amount);
   });
 
-  /* 2️⃣ CONVERTE PARA O RECHARTS */
-  const data = Object.entries(grouped).map(([date, values]) => ({
-    date,
-    ...values
-  }));
+  /* 2️⃣ CONVERTE PARA RECHARTS (ORDENADO) */
+  const data = Object.entries(grouped)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([rawDate, values]) => {
+      const [y, m, d] = rawDate.split("-");
+      return {
+        date: `${d}/${m}`, // EXIBIÇÃO
+        ...values
+      };
+    });
 
   if (data.length === 0) {
     return <p className="muted">Sem dados por data.</p>;
   }
+
+  /* 3️⃣ SÓ MOSTRA LINHAS QUE TÊM VALOR */
+  const hasValue = (type: string) =>
+    data.some(d => d[type as keyof typeof d] > 0);
 
   return (
     <div>
@@ -74,60 +79,44 @@ export function ExpensesByDateChart({
         Gastos ao longo do tempo
       </h3>
 
-      {/* 🎛️ FILTROS */}
-      <div
-        style={{
-          display: "flex",
-          gap: 16,
-          marginBottom: 16,
-          flexWrap: "wrap"
-        }}
-      >
-        {TYPES.map(type => (
-          <label
-            key={type}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              cursor: "pointer",
-              opacity: visibleTypes[type] ? 1 : 0.4
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={visibleTypes[type]}
-              onChange={() =>
-                setVisibleTypes(prev => ({
-                  ...prev,
-                  [type]: !prev[type]
-                }))
-              }
-            />
-            <span
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: COLORS[type]
-              }}
-            />
-            {TYPE_LABELS[type]}
-          </label>
-        ))}
-      </div>
-
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data}>
-          <XAxis dataKey="date" />
-          <YAxis />
+          <CartesianGrid
+            stroke="rgba(255,255,255,0.06)"
+            strokeDasharray="3 3"
+          />
+
+          <XAxis
+            dataKey="date"
+            stroke="#94a3b8"
+            tick={{ fontSize: 12 }}
+            interval="preserveStartEnd"
+            minTickGap={24}
+          />
+
+          <YAxis
+            stroke="#94a3b8"
+            tick={{ fontSize: 12 }}
+            tickFormatter={v => `R$ ${v}`}
+          />
+
           <Tooltip
-            formatter={(value, name) =>
-              typeof value === "number"
-                ? [`R$ ${value.toFixed(2)}`, TYPE_LABELS[name as string]]
-                : ["R$ 0,00", ""]
+            contentStyle={{
+              background: "#020617",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.08)"
+            }}
+            labelStyle={{
+              color: "#e5e7eb",
+              fontWeight: 600
+            }}
+            formatter={(value: number, name: string) =>
+              value > 0
+                ? [`R$ ${value.toFixed(2)}`, TYPE_LABELS[name]]
+                : null
             }
           />
+
           <Legend
             formatter={(value) =>
               TYPE_LABELS[value as string] ?? value
@@ -136,14 +125,14 @@ export function ExpensesByDateChart({
 
           {TYPES.map(
             type =>
-              visibleTypes[type] && (
+              hasValue(type) && (
                 <Line
                   key={type}
                   type="monotone"
                   dataKey={type}
                   stroke={COLORS[type]}
                   strokeWidth={3}
-                  dot={{ r: 3 }}
+                  dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
                 />
               )

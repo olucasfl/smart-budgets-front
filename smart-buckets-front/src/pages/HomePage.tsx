@@ -24,52 +24,65 @@ export function HomePage() {
   }, []);
 
   return (
-    <div className="container fade-in">
-      {/* Header */}
-      <div className="page-header">
-        <h1>Smart Buckets</h1>
+    <div className="home-wrapper fade-in">
+      {/* ================= HEADER ================= */}
+      <header className="home-hero">
+        <div className="home-hero-text">
+          <h1>Smart Buckets</h1>
+          <p>
+            Organize seus gastos por hubs de forma
+            <span> inteligente</span>
+          </p>
+        </div>
 
         <button
-          className="primary"
-          onClick={() => setShowForm(prev => !prev)}
+          className="cta-primary"
+          onClick={() => setShowForm(p => !p)}
         >
-          {showForm ? "Cancelar" : "Criar Hub"}
+          {showForm ? "Cancelar" : "+ Criar Hub"}
         </button>
-      </div>
+      </header>
 
-      {/* Form */}
+      {/* ================= CREATE HUB ================= */}
       {showForm && (
-        <div style={{ marginBottom: 24 }}>
+        <section className="create-hub-glass">
           <HubForm
             onSaved={() => {
               setShowForm(false);
               load();
             }}
           />
-        </div>
+        </section>
       )}
 
-      {/* Loading */}
-      {loading && <p>Carregando hubs...</p>}
+      {/* ================= CONTENT ================= */}
+      <section className="home-content">
+        {loading && (
+          <p className="muted">Carregando hubs...</p>
+        )}
 
-      {/* Empty state */}
-      {!loading && hubs.length === 0 && (
-        <div className="card muted center">
-          <p>Nenhum hub criado ainda.</p>
-          <small>Crie um hub para começar a organizar seus gastos.</small>
-        </div>
-      )}
+        {!loading && hubs.length === 0 && (
+          <div className="empty-glass">
+            <h3>Nenhum hub criado</h3>
+            <p>
+              Crie seu primeiro hub e comece a
+              organizar seus gastos agora.
+            </p>
+          </div>
+        )}
 
-      {/* Cards */}
-      <div className="grid">
-        {hubs.map(hub => (
-          <HubCard
-            key={hub.id}
-            hub={hub}
-            onDeleted={load}
-          />
-        ))}
-      </div>
+        {!loading && hubs.length > 0 && (
+          <div className="hub-grid-modern">
+            {hubs.map(hub => (
+              <HubCard
+                key={hub.id}
+                hub={hub}
+                onDeleted={load}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

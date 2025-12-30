@@ -1,0 +1,67 @@
+/* =========================
+   CARD BASE
+========================= */
+
+.card {
+  background: rgba(30, 41, 59, 0.65);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+  padding: 28px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* =========================
+   HUB PROGRESS
+========================= */
+
+.hub-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* trilho */
+.hub-progress-track {
+  width: 100%;
+  height: 14px; /* 👈 altura VISÍVEL */
+  background: rgba(2, 6, 23, 0.9);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* preenchimento */
+.hub-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #6366f1,
+    #818cf8
+  );
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+  transition: width 0.4s ease;
+}
+
+/* label */
+.hub-progress-label {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* =========================
+   ORÇAMENTO / INFO
+========================= */
+
+.budget-info {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  font-size: 0.95rem;
+}
+
+.budget-info span {
+  white-space: nowrap;
+}

@@ -1,61 +1,164 @@
 import { useState } from "react";
 import { expenseService } from "../../services/expenseService";
 
-export default function ExpenseForm({
-  hubId,
-  onSaved
-}: {
+type Props = {
   hubId: number;
   onSaved: () => void;
-}) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState<number | "">("");
-  const [type, setType] = useState("DEBIT");
+};
 
-  const submit = async () => {
-    if (!name || !amount) {
-      alert("Preencha nome e valor");
-      return;
+type FieldErrors = {
+  name?: string;
+  amount?: string;
+  general?: string;
+};
+
+export default function ExpenseForm({ hubId, onSaved }: Props) {
+  const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [type, setType] = useState("DEBIT");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  /* =========================
+     VALIDAÇÃO FRONTEND
+  ========================= */
+
+  const validate = (): boolean => {
+    const newErrors: FieldErrors = {};
+
+    if (!name.trim()) {
+      newErrors.name = "Informe o nome da despesa.";
     }
 
-    await expenseService.create(hubId, {
-      name,
-      description,
-      amount: Number(amount),
-      type
-    });
+    if (!amount) {
+      newErrors.amount = "Informe o valor.";
+    } else if (Number(amount) <= 0) {
+      newErrors.amount = "O valor deve ser maior que zero.";
+    } else if (isNaN(Number(amount))) {
+      newErrors.amount = "Valor inválido.";
+    }
 
-    setName("");
-    setDescription("");
-    setAmount("");
-    setType("DEBIT");
-    onSaved();
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  /* =========================
+     SUBMIT
+  ========================= */
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      await expenseService.create({
+        hubId,
+        name: name.trim(),
+        amount: Number(amount),
+        description: description.trim(),
+        type
+      });
+
+      // reset
+      setName("");
+      setAmount("");
+      setDescription("");
+      setType("DEBIT");
+
+      onSaved();
+    } catch (err: any) {
+      // erro vindo da API
+      if (err?.response?.data?.message) {
+        setErrors({ general: err.response.data.message });
+      } else if (err?.message === "Network Error") {
+        setErrors({ general: "Erro de conexão. Tente novamente." });
+      } else {
+        setErrors({ general: "Erro inesperado ao salvar despesa." });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="form-card fade-in">
-      <h3>Nova Despesa</h3>
+    <div className="expense-form-wrapper">
+      <div className="expense-form">
+        <h3>Nova Despesa</h3>
 
-      <div className="form-horizontal">
-        <input placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
-        <input type="number" placeholder="Valor" value={amount}
-          onChange={e => setAmount(e.target.value ? Number(e.target.value) : "")} />
+        {errors.general && (
+          <div className="form-error">
+            {errors.general}
+          </div>
+        )}
 
-        <textarea placeholder="Descrição (opcional)"
-          value={description}
-          onChange={e => setDescription(e.target.value)} />
+        <div className="expense-form-grid">
+          {/* NOME */}
+          <div className="form-group">
+            <label>Nome</label>
+            <input
+              placeholder="Ex: Pizza"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className={errors.name ? "input-error" : ""}
+            />
+            {errors.name && (
+              <span className="error-text">{errors.name}</span>
+            )}
+          </div>
 
-        <select value={type} onChange={e => setType(e.target.value)}>
-          <option value="DEBIT">Débito</option>
-          <option value="CREDIT">Crédito</option>
-          <option value="PIX">PIX</option>
-          <option value="MONEY">Dinheiro</option>
-        </select>
+          {/* VALOR */}
+          <div className="form-group">
+            <label>Valor</label>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={e => setAmount(e.target.value)}
+              className={errors.amount ? "input-error" : ""}
+            />
+            {errors.amount && (
+              <span className="error-text">{errors.amount}</span>
+            )}
+          </div>
 
-        <button className="primary" onClick={submit}>
-          Adicionar
-        </button>
+          {/* DESCRIÇÃO */}
+          <div className="form-group full">
+            <label>Descrição (opcional)</label>
+            <textarea
+              placeholder="Detalhes da despesa..."
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </div>
+
+          {/* TIPO */}
+          <div className="form-group">
+            <label>Tipo</label>
+            <select
+              value={type}
+              onChange={e => setType(e.target.value)}
+            >
+              <option value="PIX">Pix</option>
+              <option value="CREDIT">Crédito</option>
+              <option value="DEBIT">Débito</option>
+              <option value="MONEY">Dinheiro</option>
+            </select>
+          </div>
+
+          {/* BOTÃO */}
+          <div className="form-group button">
+            <button
+              className="primary"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? "Salvando..." : "Adicionar"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

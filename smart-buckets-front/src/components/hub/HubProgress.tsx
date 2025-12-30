@@ -1,40 +1,23 @@
-export function HubProgress({
-  spent,
-  limit
-}: {
+type HubProgressProps = {
   spent: number;
   limit: number;
-}) {
-  const percent = Math.min((spent / limit) * 100, 100);
+};
+
+export function HubProgress({ spent, limit }: HubProgressProps) {
+  const percentage = Math.min((spent / limit) * 100, 100);
 
   return (
-    <div>
-      <div
-        style={{
-          background: "#020617",
-          borderRadius: 10,
-          overflow: "hidden",
-          marginTop: 6
-        }}
-      >
+    <div className="hub-progress">
+      <div className="hub-progress-track">
         <div
-          style={{
-            height: 12,
-            width: `${percent}%`,
-            background:
-              percent < 70
-                ? "var(--primary)"
-                : percent < 90
-                ? "#f59e0b"
-                : "var(--danger)",
-            transition: "width .4s ease"
-          }}
+          className="hub-progress-fill"
+          style={{ width: `${percentage}%` }}
         />
       </div>
 
-      <small className="muted">
-        R$ {spent} / R$ {limit}
-      </small>
+      <div className="hub-progress-label">
+        R$ {spent.toFixed(2)} / R$ {limit.toFixed(2)}
+      </div>
     </div>
   );
 }

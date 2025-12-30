@@ -1,0 +1,22 @@
+.insights-card {
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.insight-content {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.65);
+  backdrop-filter: blur(14px);
+  padding: 26px;
+  border-radius: 20px;
+}
+
+.insight-arrow {
+  background: white;
+  color: #0f172a;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+}

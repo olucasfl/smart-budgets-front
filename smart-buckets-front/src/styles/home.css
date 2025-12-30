@@ -1,0 +1,137 @@
+/* =========================
+   WRAPPER
+========================= */
+
+.home-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 48px 24px 80px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.home-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.home-hero-text h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.home-hero-text p {
+  margin-top: 8px;
+  font-size: 1.1rem;
+  color: #94a3b8;
+}
+
+.home-hero-text span {
+  color: #818cf8;
+  font-weight: 600;
+}
+
+/* CTA */
+.cta-primary {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 30px 80px rgba(99, 102, 241, 0.65);
+}
+
+/* =========================
+   CREATE HUB (GLASS)
+========================= */
+
+.create-hub-glass {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 56px;
+
+  animation: slideFade 0.45s ease;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.home-content {
+  margin-top: 16px;
+}
+
+/* =========================
+   GRID HUBS
+========================= */
+
+.hub-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-glass {
+  margin-top: 60px;
+  text-align: center;
+  padding: 48px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.empty-glass h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.empty-glass p {
+  color: #94a3b8;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hub-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hub-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+.hub-card:active {
+  transform: translateY(-4px) scale(1.01);
+}

@@ -1,0 +1,80 @@
+/* =========================
+   HUB FORM (PADRÃO DESPESA)
+========================= */
+
+.hub-form {
+  background: rgba(30, 41, 59, 0.65);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hub-form h3 {
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* GRID */
+.hub-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.form-group.button {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* INPUTS */
+.hub-form input,
+.hub-form textarea {
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 14px 16px;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.hub-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* =========================
+   ERROS
+========================= */
+
+.form-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: #fca5a5;
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
