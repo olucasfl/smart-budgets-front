@@ -151,17 +151,16 @@ export function HubDetailPage() {
                 <label
                   key={type}
                   className={`type-pill ${typeFilter[type] ? "active" : ""}`}
-                  onClick={() =>
-                    setTypeFilter(prev => ({
-                      ...prev,
-                      [type]: !prev[type]
-                    }))
-                  }
                 >
                   <input
                     type="checkbox"
                     checked={typeFilter[type]}
-                    readOnly
+                    onChange={() =>
+                      setTypeFilter(prev => ({
+                        ...prev,
+                        [type]: !prev[type]
+                      }))
+                    }
                   />
                   {type}
                 </label>
